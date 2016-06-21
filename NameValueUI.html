@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0">
+
+    <title>Test</title>
+
+    <style>
+        .button1 {
+            padding-top: 1px;
+            padding-right: 25px;
+            padding-bottom: 1px;
+            padding-left: 25px;
+            margin-left: 121px;
+            margin-top: 1px;
+        }
+
+        .button2 {
+            padding-top: 1px;
+            padding-right: 25px;
+            padding-bottom: 1px;
+            padding-left: 25px;
+            margin-left: 110px;
+            top: -170px;
+        }
+
+        .button3 {
+            padding-top: 1px;
+            padding-right: 25px;
+            padding-bottom: 1px;
+            padding-left: 25px;
+            margin-left: 110px;
+            top: -130px;
+        }
+
+        .button4 {
+            padding-top: 1px;
+            padding-right: 25px;
+            padding-bottom: 1px;
+            padding-left: 25px;
+            margin-left: 110px;
+            top: -90px;
+        }
+
+        .button5 {
+            padding-top: 1px;
+            padding-right: 25px;
+            padding-bottom: 1px;
+            padding-left: 25px;
+            margin-left: 110px;
+            top: -50px;
+        }
+    </style>
+
+
+
+
+</head>
+<body>
+    <h1> Test</h1> <br>
+    <label for="Name/Value Pair"> Name/Value Pair</label>
+
+    <input type="text" id="InputData" name="Name/Value Pair" style="width: 300px;">
+    <button onclick="Add()" class="button1">Add</button>
+
+    <br /><br />
+    <label for="Name/Value Pair"> Name/Value Pair List</label>
+    <br />
+
+
+    <table border="0" width="400">
+
+        <tr>
+
+
+            <th align="left">
+                <select name="ListBoxList" size="20" id="ListBoxListID">
+                    <option value="Begin" disabled selected="selected">------List Starts from here----</option>
+
+                </select>
+
+            </th>
+
+
+            <td>
+                <table border="0" width="400">
+
+                    <tr>
+                        <td align="left"><input name="btnSortByName" onclick="SortByName()" type="button" class="button2" id="btnSortByNameID" value="Sort By Name" /></td>
+                    </tr>
+                    <tr></tr>
+                    <tr>
+                        <td align="left"><input name="btnSortByValue" onclick="SortByValue()" type="button" class="button3" id="btnSortByValueID" value="Sort By Value" /></td>
+                    </tr>
+
+                    <tr>
+                        <td align="left"><input name="btnDelete" onclick="Delete()" type="button" class="button4" id="btnSortByNameID" value="Delete" /></td>
+                    </tr>
+
+                    <tr>
+                        <td align="left"><input name="btnShowXML" onclick="ShowXML()" type="button" class="button5" id="btnShowXMLID" value="Show XML" /></td>
+                    </tr>
+                </table>
+            </td>
+            <td>
+                <label for="XML">XML</label>
+                <textarea id="XMLData" rows="15" cols="40" readonly></textarea>
+            </td>
+
+
+        </tr>
+
+    </table>
+
+
+    <script>
+        var inputData = "";
+
+        function Add() {
+
+            var i = 0;
+            var ListBoxObject = document.getElementById("ListBoxListID");
+
+            if (document.getElementById("InputData").value.length != 0) {
+
+
+                //check for the format for <name> <value> pair
+
+                var NameValue = document.getElementById("InputData").value.split("=")
+
+                if (NameValue.length != 2) {
+                    alert("incorrect format of Name Value Pair");
+                    return;
+                }
+
+                else if (NameValue.length == 2) {
+
+
+                    // check for alpha numeric characters
+
+                    var check2 = CheckForAlphaNumeric(NameValue[0].trim());
+                    var check3 = CheckForAlphaNumeric(NameValue[1].trim());
+
+                    if (NameValue[0].trim() == "") {
+                        alert("Name can not be empty");
+                        return;
+                    }
+
+                    if (check2 == true && check3 == true) {
+
+                        var check = CheckValue(NameValue[0].trim() + "=" + NameValue[1].trim());
+
+                        // check if the value already exists
+                        if (check == true) {
+
+                            inputData = inputData + NameValue[0].trim() + "=" + NameValue[1].trim();
+
+                            var opt = document.createElement('option');
+                            opt.value = NameValue[0].trim() + "=" + NameValue[1].trim();
+                            opt.innerHTML = NameValue[0].trim() + "=" + NameValue[1].trim();
+                            ListBoxObject.appendChild(opt);
+                            i++;
+                        }
+
+                        else {
+                            alert("Warning !! the <name> <value> pair already exists");
+                            inputData = inputData + NameValue[0].trim() + "=" + NameValue[1].trim();
+
+                            var opt = document.createElement('option');
+                            opt.value = NameValue[0].trim() + "=" + NameValue[1].trim();
+                            opt.innerHTML = NameValue[0].trim() + "=" + NameValue[1].trim();
+                            ListBoxObject.appendChild(opt);
+                            i++;
+                        }
+                    }
+                    else {
+                        alert('Input is not alphanumeric');
+                        return;
+                    }
+                }
+
+
+            }
+
+
+            document.getElementById("InputData").value = "";
+        }
+
+        function Delete() {
+
+            var ListBoxObject = document.getElementById("ListBoxListID");
+
+            var DeleteListItem = ListBoxObject.value;
+            if (ListBoxObject.options.length == 1) {
+                alert('List is empty');
+            }
+
+            else {
+                var optionToRemove = ListBoxObject.options.selectedIndex;
+                ListBoxObject.remove(optionToRemove);
+            }
+
+            var lines = inputData.split("\n");
+
+            for (var i = 0; i < lines.length; i++) {
+
+                if (lines[i] == DeleteListItem) {
+
+                    lines[i] = "";
+                }
+            }
+            inputData = "";
+            for (var j = 0; j < lines.length; j++) {
+                if (lines[j] != "") {
+                    inputData = inputData + lines[j] + "\n";
+                }
+
+            }
+
+
+        }
+
+
+        function CheckValue(text) {
+
+
+            var strIndex = inputData.indexOf(text);
+            if (strIndex == -1) {
+                return true;
+            } else {
+                return false;
+            }
+
+
+        }
+
+        function CheckForAlphaNumeric(text) {
+
+            for (var i = 0; i < text.length; i++) {
+                var char1 = text.charAt(i);
+                var cc = char1.charCodeAt(0);
+
+                if ((cc > 47 && cc < 58) || (cc > 64 && cc < 91) || (cc > 96 && cc < 123)) {
+
+                }
+                else {
+
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function SortByName() {
+            var index = 0;
+
+            if (inputData.length != 0) {
+                var ListBoxObject = document.getElementById("ListBoxListID");
+                var text = "";
+                for (var i = 0; i < ListBoxObject.length; i++) {
+                    if (i == 0) { continue; }
+                    text = text + "\n" + ListBoxObject.options[i].value;
+                }
+
+
+                var name = new Array();
+                var value = new Array();
+
+                var NameValueList = text.split("\n");
+                var tempArray = new Array();
+                for (var j = 0; j < NameValueList.length; j++) {
+                    if (j == 0) { continue; }
+                    tempArray[j] = new Array();
+                    var NameValueTemp = NameValueList[j].split("=");
+                    tempArray[j][0] = NameValueTemp[0];
+                    name[j] = NameValueTemp[0];
+                    tempArray[j][1] = NameValueTemp[1];
+                    value[j] = NameValueTemp[1];
+                }
+                var SortedNames = new Array();
+                SortedNames = name.sort();
+             document.getElementById("ListBoxListID").options.length = 1;
+             for (var p = 0; p < SortedNames.length - 1; p++) {
+
+                    for (var m = 1; m < tempArray.length; m++) {
+                        if (tempArray[m][0] == SortedNames[p]) {
+                            var opt = document.createElement('option');
+                            opt.value = tempArray[m][0] + "=" + tempArray[m][1];
+                            opt.innerHTML = tempArray[m][0] + "=" + tempArray[m][1];
+                            ListBoxObject.appendChild(opt);
+                            index++;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        function SortByValue() {
+            var index = 0;
+
+            if (inputData.length != 0) {
+                var ListBoxObject = document.getElementById("ListBoxListID");
+                var text = "";
+                for (var i = 0; i < ListBoxObject.length; i++) {
+                    if (i == 0) { continue; }
+                    text = text + "\n" + ListBoxObject.options[i].value;
+                }
+
+                var name = new Array();
+                var value = new Array();
+
+                var NameValueList = text.split("\n");
+                var tempArray = new Array();
+                for (var j = 0; j < NameValueList.length; j++) {
+                    if (j == 0) { continue; }
+                    tempArray[j] = new Array();
+                    var NameValueTemp = NameValueList[j].split("=");
+                    tempArray[j][0] = NameValueTemp[0];
+                    name[j] = NameValueTemp[0];
+                    tempArray[j][1] = NameValueTemp[1];
+                    value[j] = NameValueTemp[1];
+                }
+                var SortedValues = new Array();
+                SortedValues = value.sort();
+
+
+                document.getElementById("ListBoxListID").options.length = 1;
+
+
+                for (var p = 0; p < SortedValues.length - 1; p++) {
+
+                    for (var m = 1; m < tempArray.length; m++) {
+                        if (tempArray[m][1] == SortedValues[p]) {
+                            var opt = document.createElement('option');
+                            opt.value = tempArray[m][0] + "=" + tempArray[m][1];
+                            opt.innerHTML = tempArray[m][0] + "=" + tempArray[m][1];
+                            ListBoxObject.appendChild(opt);
+                            index++;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        function ShowXML() {
+
+            var index = 0;
+            document.getElementById("XMLData").value = "";
+            if (inputData.length != 0) {
+                var ListBoxObject = document.getElementById("ListBoxListID");
+                var text = "";
+                for (var i = 0; i < ListBoxObject.length; i++) {
+                    if (i == 0) { continue; }
+                    text = text + "\n" + ListBoxObject.options[i].value;
+                }
+
+                var name = new Array();
+                var value = new Array();
+
+                var NameValueList = text.split("\n");
+                var tempArray = new Array();
+                for (var j = 0; j < NameValueList.length; j++) {
+                    if (j == 0) { continue; }
+                    tempArray[j] = new Array();
+                    var NameValueTemp = NameValueList[j].split("=");
+                    tempArray[j][0] = NameValueTemp[0];
+                    name[j] = NameValueTemp[0];
+                    tempArray[j][1] = NameValueTemp[1];
+                    value[j] = NameValueTemp[1];
+                }
+
+                if (name.length == 0) {
+                    document.getElementById("XMLData").value = "";
+                    return;
+                }
+                var XML = "";
+                for (var k = 1; k < name.length; k++) {
+                    XML = XML + "<" + name[k] + ">" + value[k] + "</" + name[k] + ">" + "\n";
+                }
+                
+                var CompleteXML = "<NameValueData>\n" + XML + "</NameValueData>";
+               
+                var parser = new DOMParser();
+                xmlDoc = parser.parseFromString(CompleteXML, "text/xml");
+                var serializer = new XMLSerializer();
+                var xmlString = serializer.serializeToString(xmlDoc);
+
+                document.getElementById("XMLData").value = xmlString;
+
+            }
+     }
+
+    </script>
+
+</body>
+</html>
